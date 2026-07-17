@@ -1,0 +1,14 @@
+{
+  "name": "claude-code",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Build an AI-powered coding agent — curriculum and tests for the Claude Code system",
+  "type": "module",
+  "scripts": {
+    "test": "npx vitest run",
+    "test:watch": "npx vitest"
+  },
+  "devDependencies": {
+    "@100xsystems/test-suite-typescript": "^0.1.0"
+  }
+}

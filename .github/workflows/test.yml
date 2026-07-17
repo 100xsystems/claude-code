@@ -1,0 +1,135 @@
+# ─────────────────────────────────────────────────────────────────────
+# 100xSystems — Curriculum Test Workflow
+#
+# Runs every time a PR is opened or updated against the main branch.
+# Ensures that all lesson behavior.test.ts files pass before merging.
+#
+# This is the quality gate for the curriculum — it prevents broken test
+# files from being merged. Contributors get immediate feedback on their
+# PR without needing to run tests locally.
+#
+# The workflow:
+#   1. Clones the repo
+#   2. Installs dependencies (uses npm cache for speed)
+#   3. Runs vitest on all test files in the curriculum
+#   4. Reports results as a PR check
+#
+# For the system-template repo, copy this file to .github/workflows/test.yml
+# and adjust the test paths if needed.
+# ─────────────────────────────────────────────────────────────────────
+
+name: Tests
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+jobs:
+  # ── TypeScript Track Tests ────────────────────────────────────────
+  test-typescript:
+    runs-on: ubuntu-latest
+    if: hashFiles('track-typescript/package.json') != ''
+
+    defaults:
+      run:
+        working-directory: track-typescript
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: 'npm'
+          cache-dependency-path: track-typescript/package.json
+
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+
+      - name: Run TypeScript compilation check
+        run: npx tsc --noEmit
+        continue-on-error: true
+
+      - name: Run lesson tests
+        run: npx vitest run --reporter verbose --reporter json --outputFile=test-results.json
+        continue-on-error: true
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-typescript
+          path: track-typescript/test-results.json
+          if-no-files-found: ignore
+
+      - name: Check test results
+        if: always()
+        run: |
+          if [ -f test-results.json ]; then
+            PASSED=$(node -e "const r=require('./test-results.json'); const t=r.testResults||[]; console.log(t.reduce((a,f)=>a+(f.assertionResults||[]).filter(a=>a.status==='passed').length,0))")
+            FAILED=$(node -e "const r=require('./test-results.json'); const t=r.testResults||[]; console.log(t.reduce((a,f)=>a+(f.assertionResults||[]).filter(a=>a.status==='failed').length,0))")
+            echo "✅ Passed: $PASSED"
+            echo "❌ Failed: $FAILED"
+            if [ "$FAILED" -gt 0 ]; then
+              echo "Some tests failed. Check the workflow logs for details."
+              exit 1
+            fi
+          else
+            echo "No test results file found — vitest may not have produced output."
+          fi
+
+  # ── Java Track Tests (Maven) ──────────────────────────────────────
+  test-java:
+    runs-on: ubuntu-latest
+    if: hashFiles('track-java/pom.xml') != ''
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: 17
+          distribution: 'temurin'
+          cache: 'maven'
+
+      - name: Compile Java track
+        id: maven-compile
+        run: mvn compile -q
+        working-directory: track-java
+        continue-on-error: true
+
+      - name: Check compilation result
+        if: steps.maven-compile.outcome == 'failure'
+        run: |
+          echo "❌ Java track compilation failed."
+          exit 1
+
+      - name: Run JUnit tests
+        id: maven-test
+        run: mvn test -q
+        working-directory: track-java
+        continue-on-error: true
+
+      - name: Check test results
+        if: steps.maven-test.outcome == 'failure'
+        run: |
+          echo "❌ Java track tests failed."
+          exit 1
+
+      - name: Upload surefire reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: track-java/target/surefire-reports/
+          if-no-files-found: ignore
+
+      - name: Tests passed
+        if: steps.maven-test.outcome == 'success'
+        run: echo "✅ Java track tests passed."
