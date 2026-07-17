@@ -9,6 +9,7 @@
     "test:watch": "vitest"
   },
   "devDependencies": {
+    "@100xsystems/test-suite-typescript": "^0.1.0",
     "vitest": "^3.0.0",
     "@types/node": "^22.0.0"
   }
