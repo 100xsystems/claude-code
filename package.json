@@ -5,8 +5,8 @@
   "description": "Build an AI-powered coding agent — curriculum and tests for the Claude Code system",
   "type": "module",
   "scripts": {
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "npx vitest run",
+    "test:watch": "npx vitest"
   },
   "devDependencies": {
     "@100xsystems/test-suite-typescript": "^0.1.0"
