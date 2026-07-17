@@ -15,18 +15,10 @@ knowledge_refs:
   - "patterns/adapter"
   - "principles/single-responsibility"
 validation:
-  - type: file-exists
-    path: "src/main/java/com/claudecode/cli/CLIApplication.java"
-    must_contain: "CommandLine"
-  - type: file-contains
-    path: "src/main/java/com/claudecode/cli/CLIApplication.java"
-    pattern: "implements.*Callable"
-    description: "Has Callable implementation for commands"
-  - type: file-exists
-    path: "src/main/java/com/claudecode/agent/Agent.java"
-  - type: cli-command
-    command: "mvn compile -q"
-    description: "Maven project compiles"
+  - type: test-runner
+    test_file: "tests/Lesson2Test.java"
+    framework: junit
+    timeout: 180000
 ---
 
 # Build the Java CLI with Picocli
@@ -224,7 +216,6 @@ public class LLMClient {
 
     public LLMClient() {
         this.httpClient = HttpClient.newHttpClient();
-        this.mapper = new ObjectMapper();
         this.apiKey = System.getenv().getOrDefault("ANTHROPIC_API_KEY", "");
         this.apiUrl = System.getenv().getOrDefault("LLM_API_URL",
             "https://api.anthropic.com/v1/messages");
