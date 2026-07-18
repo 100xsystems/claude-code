@@ -3,7 +3,7 @@ title: "CLI Foundations Quiz"
 order: 99
 module: "CLI Foundations"
 track: "typescript"
-type: "quiz"
+lesson_type: "quiz"
 questions:
   - question: "What three phases make up the agent loop?"
     type: "multiple-choice"

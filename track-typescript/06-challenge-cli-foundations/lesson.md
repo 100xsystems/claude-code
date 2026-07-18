@@ -1,4 +1,5 @@
 ---
+lesson_type: "challenge"
 title: "Build a Code Review Tool"
 order: 100
 module: "CLI Foundations"
