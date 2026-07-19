@@ -9,11 +9,14 @@
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "allowImportingTsExtensions": true,
+    "noEmit": true,
     "types": ["vitest/globals", "node"]
   },
   "include": [
     "**/*.test.ts",
     "**/*.spec.ts",
-    "**/tests/**/*.ts"
+    "**/tests/**/*.ts",
+    "**/solution/**/*.ts"
   ]
 }
