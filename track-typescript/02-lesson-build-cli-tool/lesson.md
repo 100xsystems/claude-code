@@ -1,5 +1,6 @@
 ---
 title: "Build the CLI Tool"
+description: "Implement a full CLI with subcommands using Commander, handle interactive and non-interactive modes, and process stdin/stdout for tool communication."
 order: 2
 module: "CLI Foundations"
 track: "typescript"

@@ -1,5 +1,6 @@
 ---
 title: "Introduction & Project Setup"
+description: "Set up your development environment and learn the fundamentals of building a CLI tool with TypeScript project tooling, architecture understanding, and project structure creation."
 order: 1
 module: "CLI Foundations"
 track: "typescript"
